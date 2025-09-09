@@ -10,27 +10,32 @@ int randomIntInRange(int left, int right) {
     return uniform_int_distribution<int>{left, right}(gen);
 }
 
-// this implementation while correct can't handle the case where all elements are same and it goes to n*n algorithm
-int partition(vector<int> &input, int left, int right) {
+pair<int, int> partition(vector<int> &input, int left, int right) {
     int pivotIdx = randomIntInRange(left, right);
     swap(input[pivotIdx], input[right]);
     int pivotElement = input[right];
-    int countSmaller = left;
-    for(int i = left; i < right; i++) {
-        if(input[i] <= pivotElement) {
-            swap(input[countSmaller], input[i]);
-            countSmaller++;
+    int smallerIndex = left;
+    int mid = left;
+    int biggerIndex = right - 1;
+    while(mid <= biggerIndex) {
+        if(input[mid] < pivotElement) {
+            swap(input[smallerIndex++], input[mid++]);
+        } else if (input[mid] == pivotElement) {
+            mid++;
+        } else {
+            swap(input[mid], input[biggerIndex--]);
         }
     }
-    swap(input[right], input[countSmaller]);
-    return countSmaller;
+
+    swap(input[right], input[mid]);
+    return pair{smallerIndex, mid};
 }
 
 void quickSort(vector<int> &input, int left, int right) {
     if(left < right) {
-        int pivotIdx = partition(input, left, right);
-        quickSort(input, left, pivotIdx - 1);
-        quickSort(input, pivotIdx + 1, right);
+        pair<int, int> pivotIdx = partition(input, left, right);
+        quickSort(input, left, pivotIdx.first - 1);
+        quickSort(input, pivotIdx.second + 1, right);
     }
 }
 
@@ -39,7 +44,8 @@ void quickSort(vector<int> &input) {
 }
 
 int main() {
-    vector<int> input = {12, 12, 123123, -12, 23, 0};
+    vector<int> input = {12, 12, 12, 12, 12, 123123, -12, 23, 0};
+    // {5,1,1,2,0,0};
     quickSort(input);
     for(const auto &i: input) {
         cout << i << ", ";
