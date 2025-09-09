@@ -12,11 +12,10 @@ int randomIntInRange(int left, int right) {
 
 pair<int, int> partition(vector<int> &input, int left, int right) {
     int pivotIdx = randomIntInRange(left, right);
-    swap(input[pivotIdx], input[right]);
-    int pivotElement = input[right];
+    int pivotElement = input[pivotIdx];
     int smallerIndex = left;
     int mid = left;
-    int biggerIndex = right - 1;
+    int biggerIndex = right;
     while(mid <= biggerIndex) {
         if(input[mid] < pivotElement) {
             swap(input[smallerIndex++], input[mid++]);
@@ -26,16 +25,14 @@ pair<int, int> partition(vector<int> &input, int left, int right) {
             swap(input[mid], input[biggerIndex--]);
         }
     }
-
-    swap(input[right], input[mid]);
-    return pair{smallerIndex, mid};
+    return pair{smallerIndex, biggerIndex};
 }
 
 void quickSort(vector<int> &input, int left, int right) {
     if(left < right) {
-        pair<int, int> pivotIdx = partition(input, left, right);
-        quickSort(input, left, pivotIdx.first - 1);
-        quickSort(input, pivotIdx.second + 1, right);
+        pair<int, int> pivotIndices = partition(input, left, right);
+        quickSort(input, left, pivotIndices.first - 1);
+        quickSort(input, pivotIndices.second + 1, right);
     }
 }
 
